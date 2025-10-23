@@ -54,7 +54,6 @@ public class config {
         }
     }
 
-    // ✅ View records
     public void viewRecords(String sqlQuery, String[] columnHeaders, String[] columnNames) {
         if (columnHeaders.length != columnNames.length) {
             System.out.println("Error: Mismatch between column headers and column names.");
@@ -64,7 +63,6 @@ public class config {
         try (PreparedStatement pstmt = connectDB().prepareStatement(sqlQuery);
              ResultSet rs = pstmt.executeQuery()) {
 
-            // Print table header
             StringBuilder headerLine = new StringBuilder();
             headerLine.append("--------------------------------------------------------------------------------\n| ");
             for (String header : columnHeaders) {
@@ -73,7 +71,6 @@ public class config {
             headerLine.append("\n--------------------------------------------------------------------------------");
             System.out.println(headerLine.toString());
 
-            // Print rows
             while (rs.next()) {
                 StringBuilder row = new StringBuilder("| ");
                 for (String colName : columnNames) {
@@ -89,7 +86,6 @@ public class config {
         }
     }
 
-    // ✅ Delete record
     public void deleteRecord(String sql, Object... values) {
         try (PreparedStatement pstmt = connectDB().prepareStatement(sql)) {
             for (int i = 0; i < values.length; i++) {
@@ -102,7 +98,6 @@ public class config {
         }
     }
 
-    // ✅ Fetch records (returns list of maps)
     public java.util.List<java.util.Map<String, Object>> fetchRecords(String sqlQuery, Object... values) {
         java.util.List<java.util.Map<String, Object>> records = new java.util.ArrayList<>();
 
@@ -130,7 +125,6 @@ public class config {
         return records;
     }
 
-    // ✅ Hash password (SHA-256)
     public String hashPassword(String password) {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
@@ -147,5 +141,22 @@ public class config {
             System.out.println("Error hashing password: " + e.getMessage());
             return null;
         }
+    }
+
+    // ✅ Fixed insertRecord method to add houses
+    public void insertRecord(String sql, Object... values) {
+        try (PreparedStatement pstmt = connectDB().prepareStatement(sql)) {
+            for (int i = 0; i < values.length; i++) {
+                pstmt.setObject(i + 1, values[i]);
+            }
+            pstmt.executeUpdate();
+            System.out.println("Record inserted successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error inserting record: " + e.getMessage());
+        }
+    }
+
+    public void viewRecords(String myBookings, String[] bookingHeaders, String[] bookingColumns, int userId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

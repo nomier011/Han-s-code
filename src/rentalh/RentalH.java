@@ -4,9 +4,7 @@ import Config.config;
 import java.util.Scanner;
 import static rentalh.Admin.viewUsers;
 
-
 public class RentalH {
-
 
     public static void main(String[] args) {
         try (Scanner sc = new Scanner(System.in)) {
@@ -15,18 +13,17 @@ public class RentalH {
             char cont = 0;
             int choice;
 
-
-          do {
-            System.out.println("HOUSE RENTAL RECORDING SYSTEM");
-            System.out.println("1. Login");
-            System.out.println("2. Register");
-            System.out.println("3. View Users");
-            System.out.println("4. Update User");
-            System.out.println("5. Delete User");
-            System.out.println("6. Exit");
-            System.out.print("Enter choice: ");
-            choice = sc.nextInt();
-            sc.nextLine();
+            do {
+                System.out.println("\nHOUSE RENTAL RECORDING SYSTEM");
+                System.out.println("1. Login");
+                System.out.println("2. Register");
+                System.out.println("3. View Users");
+                System.out.println("4. Update User");
+                System.out.println("5. Delete User");
+                System.out.println("6. Exit");
+                System.out.print("Enter choice: ");
+                choice = sc.nextInt();
+                sc.nextLine();
 
                 switch (choice) {
                     case 1:
@@ -34,9 +31,8 @@ public class RentalH {
                         String email = sc.nextLine();
                         System.out.print("Enter Password: ");
                         String pass = sc.nextLine();
-                        
-                        String hashPass = database.hashPassword(pass);
 
+                        String hashPass = database.hashPassword(pass);
 
                         while (true) {
                             String qry = "SELECT * FROM tbl_users WHERE Email = ? AND Password = ?";
@@ -59,18 +55,18 @@ public class RentalH {
                                     if (type.equalsIgnoreCase("Admin")) {
                                         Admin admin = new Admin();
                                         admin.Admin();
-                                        
-                                        
                                         break;
                                     } else if (type.equalsIgnoreCase("Customer")) {
-                                        Customer customer = new Customer();
-                                        customer.Customer();
+                                        // ✅ FIXED: Pass userId to Customer constructor
+                                        int userId = Integer.parseInt(user.get("ID").toString());
+                                        Customer customer = new Customer(userId);
                                     }
                                     break;
                                 }
                             }
                         }
                         break;
+
                     case 2:
                         config con = new config();
 
@@ -96,22 +92,22 @@ public class RentalH {
                         String cnumber = sc.next();
 
                         String role = "";
-            OUTER:
-            while (true) {
-                System.out.print("Enter role (1 - Admin / 2 - Customer): ");
-                String roleInput = sc.next();
-                switch (roleInput) {
-                    case "1":
-                        role = "Admin";
-                        break OUTER;
-                    case "2":
-                        role = "Customer";
-                        break OUTER;
-                    default:
-                        System.out.println("Invalid input! Please enter 1 for Admin or 2 for Customer.");
-                        break;
-                }
-            }
+                        OUTER:
+                        while (true) {
+                            System.out.print("Enter role (1 - Admin / 2 - Customer): ");
+                            String roleInput = sc.next();
+                            switch (roleInput) {
+                                case "1":
+                                    role = "Admin";
+                                    break OUTER;
+                                case "2":
+                                    role = "Customer";
+                                    break OUTER;
+                                default:
+                                    System.out.println("Invalid input! Please enter 1 for Admin or 2 for Customer.");
+                                    break;
+                            }
+                        }
 
                         System.out.print("Enter password: ");
                         String password = sc.next();
@@ -124,58 +120,55 @@ public class RentalH {
 
                         System.out.println("Registration successful! Please wait for Admin approval.");
                         break;
-                   
 
-                case 3:
-                      viewUsers();
-                      break;
+                    case 3:
+                        viewUsers();
+                        break;
 
+                    case 4:
+                        System.out.print("Enter ID: ");
+                        int Id = sc.nextInt();
+                        sc.nextLine();
+                        System.out.print("Enter Your Name: ");
+                        String Uname = sc.next();
+                        System.out.print("Enter Your Email: ");
+                        String Uemail = sc.next();
+                        System.out.print("Enter Contact Number: ");
+                        String Unumber = sc.next();
+                        System.out.print("Role (Customer/Admin): ");
+                        String Urole = sc.next();
+                        System.out.print("Enter Your Password: ");
+                        String Upass = sc.next();
 
-                case 4:
-                    System.out.print("Enter ID: ");
-                    int Id = sc.nextInt();
-                    sc.nextLine();
-                    System.out.print("Enter Your Name: ");
-                    String Uname = sc.next();
-                    System.out.print("Enter Your Email: ");
-                    String Uemail = sc.next();
-                    System.out.print("Enter Contact Number: ");
-                    String Unumber = sc.next();
-                    System.out.print("Role (Customer/Admin): ");
-                    String Urole = sc.next();
-                    System.out.print("Enter Your Password: ");
-                    String Upass = sc.next();
+                        String sqlUpdate = "UPDATE tbl_users SET Name = ?, Email = ?, Cnumber = ?, Role = ?, Password = ? WHERE ID = ?";
+                        database.updateRecord(sqlUpdate, Uname, Uemail, Unumber, Urole, Upass, Id);
+                        break;
 
-                    String sqlUpdate = "UPDATE tbl_users SET Name = ?, Email = ?, Cnumber = ?, Role = ?, Password = ? WHERE ID = ?";
-                    database.updateRecord(sqlUpdate, Uname, Uemail, Unumber, Urole, Upass, Id);
-                    break;
+                    case 5:
+                        System.out.print("Enter ID to DELETE: ");
+                        int deleteId = sc.nextInt();
+                        config dbConfig = new config();
 
-                case 5:
-                    System.out.print("Enter ID to DELETE: ");
-                    int deleteId = sc.nextInt();
-                    config dbConfig = new config();
+                        String sqlDelete = "DELETE FROM tbl_users WHERE ID = ?";
+                        dbConfig.deleteRecord(sqlDelete, deleteId);
+                        break;
 
-                    String sqlDelete = "DELETE FROM tbl_users WHERE ID = ?";
-                    dbConfig.deleteRecord(sqlDelete, deleteId);
-                    break;
+                    case 6:
+                        System.out.println("Exiting...");
+                        System.exit(0);
+                        break;
 
-
-                case 6:
-                    System.out.println("Exiting...");
-                    System.exit(0);
-
-                    break;
-                default:
-                    System.out.println("Invalid choice.");
-                    break;
+                    default:
+                        System.out.println("Invalid choice.");
+                        break;
                 }
+
                 if (choice != 6) {
                     System.out.print("Do you want to continue? (Y/N): ");
                     cont = sc.next().charAt(0);
                 }
 
-                } while (cont == 'Y' || cont == 'y');
-       }
+            } while (cont == 'Y' || cont == 'y');
+        }
     }
-  }
-                        
+}
